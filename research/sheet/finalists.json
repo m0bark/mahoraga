@@ -1,0 +1,42 @@
+[
+ {
+  "signal": "mom126_s21",
+  "top_n": 10,
+  "trend_filter": null,
+  "vol_screen": null,
+  "regime": "spy_up",
+  "weight": "equal"
+ },
+ {
+  "signal": "mom126",
+  "top_n": 10,
+  "trend_filter": null,
+  "vol_screen": null,
+  "regime": "spy_up",
+  "weight": "equal"
+ },
+ {
+  "signal": "mom189",
+  "top_n": 10,
+  "trend_filter": "above200",
+  "vol_screen": null,
+  "regime": "spy_up",
+  "weight": "equal"
+ },
+ {
+  "signal": "mom63",
+  "top_n": 10,
+  "trend_filter": "above200",
+  "vol_screen": null,
+  "regime": "spy_up",
+  "weight": "equal"
+ },
+ {
+  "signal": "blend",
+  "top_n": 10,
+  "trend_filter": "above200",
+  "vol_screen": null,
+  "regime": "spy_up",
+  "weight": "equal"
+ }
+]

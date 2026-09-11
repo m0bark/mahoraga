@@ -1,0 +1,1165 @@
+{
+ "date": "2026-09-05",
+ "analysts": {
+  "sanjay-sakhrani": {
+   "meta": {
+    "rank": 100,
+    "name": "Sanjay Sakhrani",
+    "slug": "sanjay-sakhrani",
+    "firm": "KBW",
+    "sector": "Financials",
+    "success": "72.90%",
+    "avg_return": "16.40%",
+    "ratings": "810"
+   },
+   "ratings": [
+    {
+     "symbol": "PYPL",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "54.96"
+    },
+    {
+     "symbol": "KLAR",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "14.41"
+    },
+    {
+     "symbol": "BILL",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "49.16"
+    },
+    {
+     "symbol": "TLV:",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": null
+    },
+    {
+     "symbol": "FISV",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "53.00"
+    },
+    {
+     "symbol": "FOUR",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "45.94"
+    },
+    {
+     "symbol": "CPAY",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "416.37"
+    },
+    {
+     "symbol": "CHYM",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "33.76"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "579.21"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "22.98"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "375.07"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "326.16"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "27.08"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "110.87"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "193.91"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "219.60"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "43.73"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "79.92"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "7.17"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": null
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "41.89"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "9.63"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "82.76"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "92.54"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "7.18"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "53.58"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "30.35"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "7.87"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Upgraded",
+     "rating": "Hold",
+     "target": "29.44"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "165.64"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "13.33"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "73.81"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": null
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "17.75"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "64.63"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "3.39"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "103.41"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "137.72"
+    }
+   ]
+  },
+  "shrenik-kothari": {
+   "meta": {
+    "rank": 99,
+    "name": "Shrenik Kothari",
+    "slug": "shrenik-kothari",
+    "firm": "Robert W. Baird",
+    "sector": "Technology",
+    "success": "71.90%",
+    "avg_return": "25.40%",
+    "ratings": "587"
+   },
+   "ratings": [
+    {
+     "symbol": "ZS",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "169.80"
+    },
+    {
+     "symbol": "FROG",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "87.60"
+    },
+    {
+     "symbol": "CRWD",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "213.10"
+    },
+    {
+     "symbol": "NTSK",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "13.94"
+    },
+    {
+     "symbol": "PANW",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "333.26"
+    },
+    {
+     "symbol": "GTLB",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "49.83"
+    },
+    {
+     "symbol": "ESTC",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "91.81"
+    },
+    {
+     "symbol": "S",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "19.88"
+    },
+    {
+     "symbol": "RBRK",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "93.67"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "278.92"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "13.43"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "156.29"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "137.05"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "34.25"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "136.41"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "18.82"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "5.40"
+    }
+   ]
+  },
+  "paul-newsome": {
+   "meta": {
+    "rank": 98,
+    "name": "Paul Newsome",
+    "slug": "paul-newsome",
+    "firm": "Piper Sandler",
+    "sector": "Financials",
+    "success": "74.30%",
+    "avg_return": "14.90%",
+    "ratings": "1156"
+   },
+   "ratings": [
+    {
+     "symbol": "AON",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "323.09"
+    },
+    {
+     "symbol": "RGA",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "253.27"
+    },
+    {
+     "symbol": "AFG",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "142.72"
+    },
+    {
+     "symbol": "SKWD",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "57.34"
+    },
+    {
+     "symbol": "ALL",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "259.57"
+    },
+    {
+     "symbol": "AII",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "26.00"
+    },
+    {
+     "symbol": "ARX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "19.88"
+    },
+    {
+     "symbol": "AFL",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "117.21"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "76.21"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "334.74"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "285.74"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "97.62"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Sell",
+     "target": "28.04"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "33.95"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "28.89"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "55.98"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "33.65"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "262.69"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "41.91"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "53.41"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "228.38"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "24.67"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "171.10"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "116.68"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "44.14"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "138.37"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "41.43"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "92.19"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "174.27"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "65.21"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "341.59"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "33.23"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "218.95"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "185.74"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "369.35"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "27.80"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Sell",
+     "target": "19.96"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": null
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "53.58"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Hold",
+     "target": "104.09"
+    }
+   ]
+  },
+  "manav-gupta": {
+   "meta": {
+    "rank": 97,
+    "name": "Manav Gupta",
+    "slug": "manav-gupta",
+    "firm": "UBS",
+    "sector": "Energy",
+    "success": "72.50%",
+    "avg_return": "25.20%",
+    "ratings": "602"
+   },
+   "ratings": [
+    {
+     "symbol": "TSX:CVE",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "45.38"
+    },
+    {
+     "symbol": "DINO",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "106.06"
+    },
+    {
+     "symbol": "ADM",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "85.38"
+    },
+    {
+     "symbol": "LNG",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "295.86"
+    },
+    {
+     "symbol": "CQP",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "71.22"
+    },
+    {
+     "symbol": "XOM",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "164.15"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "293.46"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "48.96"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "55.46"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "22.51"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "128.89"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "14.73"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "122.86"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "75.48"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "217.28"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "256.09"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "1.72"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "211.78"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "31.97"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": "14.40"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "71.45"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "80.16"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "67.62"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "1.71"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "387.00"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "94.67"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "22.40"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "42.92"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "3.10"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "40.03"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Reiterated",
+     "rating": "Buy",
+     "target": "25.72"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "1.99"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "1.90"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "69.70"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "71.65"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "2.09"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "55.81"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": "86.62"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "279.90"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "7.00"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "18.22"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Sell",
+     "target": "31.68"
+    }
+   ]
+  },
+  "travis-wood": {
+   "meta": {
+    "rank": 96,
+    "name": "Travis Wood",
+    "slug": "travis-wood",
+    "firm": "National Bank",
+    "sector": "Energy",
+    "success": "73.30%",
+    "avg_return": "33.80%",
+    "ratings": "345"
+   },
+   "ratings": [
+    {
+     "symbol": "TSX:ARX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "33.91"
+    },
+    {
+     "symbol": "TSX:CNQ",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "69.78"
+    },
+    {
+     "symbol": "TSX:CVE",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "44.83"
+    },
+    {
+     "symbol": "TSX:IMO",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "177.99"
+    },
+    {
+     "symbol": "TSX:SU",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "93.14"
+    },
+    {
+     "symbol": "TSX:WCP",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "17.98"
+    },
+    {
+     "symbol": "TSX:FRU",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "17.60"
+    },
+    {
+     "symbol": "TSX:SCR",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": "43.11"
+    },
+    {
+     "symbol": "TSX:VET",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "17.77"
+    },
+    {
+     "symbol": "TSX:PSK",
+     "action": "Upgraded",
+     "rating": "Buy",
+     "target": "36.31"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "25.35"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "64.76"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "28.76"
+    }
+   ]
+  },
+  "phil-hardie": {
+   "meta": {
+    "rank": 95,
+    "name": "Phil Hardie",
+    "slug": "phil-hardie",
+    "firm": "Scotiabank",
+    "sector": "Financials",
+    "success": "77.20%",
+    "avg_return": "15.40%",
+    "ratings": "920"
+   },
+   "ratings": [
+    {
+     "symbol": "TSX:PRL",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "26.09"
+    },
+    {
+     "symbol": "TSX:DFY",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "71.86"
+    },
+    {
+     "symbol": "BBUC",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "28.02"
+    },
+    {
+     "symbol": "TSX:POW",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "95.28"
+    },
+    {
+     "symbol": "TSX:X",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "54.43"
+    },
+    {
+     "symbol": "TSX:IGM",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "87.45"
+    },
+    {
+     "symbol": "TSX:IFC",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "266.05"
+    },
+    {
+     "symbol": "TSX:FFH",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "2297"
+    },
+    {
+     "symbol": "TSX:FSZ",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "4.40"
+    },
+    {
+     "symbol": "TSX:TSU",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "41.90"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Hold",
+     "target": "43.59"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "21.90"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "26.35"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "113.85"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "47.98"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "132.92"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "24.09"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "179.20"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Sell",
+     "target": "0.85"
+    }
+   ]
+  },
+  "bill-papanastasiou": {
+   "meta": {
+    "rank": 94,
+    "name": "Bill Papanastasiou",
+    "slug": "bill-papanastasiou",
+    "firm": "Chardan Capital",
+    "sector": "Technology",
+    "success": "71.90%",
+    "avg_return": "82.80%",
+    "ratings": "119"
+   },
+   "ratings": [
+    {
+     "symbol": "BLSH",
+     "action": "Maintained",
+     "rating": "Hold",
+     "target": "36.00"
+    },
+    {
+     "symbol": "EXOD",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "7.41"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "12.69"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "142.80"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "17.89"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "93.55"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Maintained",
+     "rating": "Buy",
+     "target": "0.27"
+    },
+    {
+     "symbol": "XXXX",
+     "action": "Downgraded",
+     "rating": "Sell",
+     "target": "1.89"
+    }
+   ]
+  }
+ }
+}

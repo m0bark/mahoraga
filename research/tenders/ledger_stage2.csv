@@ -1,0 +1,25 @@
+name,ticker,first_13e3,proxy_form,proxy_date,cash_price,thresh_min,thresh_max,ratio,meeting,record_only,has_fairness,note
+SAFEGUARD SCIENTIFICS INC,SFES,2023-10-05,PRE 14A,2023-10-05,1.65,100,100,"1:50-1:100,",,True,True,
+MYMETICS CORP,CIK 0000927761,2023-10-17,DEF 14C,2023-10-27,,2000,2000,,,False,False,
+"Eargo, Inc.",CIK 0001719395,2023-11-21,PREM14A,2023-11-21,2.55,,,,,False,True,
+iClick Interactive Asia Group Ltd,ICLK,2023-12-19,,,,,,,,,,no proxy after 13E3
+"Via Renewables, Inc.",VIASP,2024-02-12,PREM14A,2024-02-12,11.00,,,,,False,True,
+"Astra Space, Inc.",CIK 0001814329,2024-04-08,,,,,,,,,,no proxy after 13E3
+Ashford Inc.,CIK 0001604738,2024-04-12,PRE 14A,2024-04-12,5.00,10000,10000,,,False,False,
+PSYCHEMEDICS CORP,PMD,2024-09-03,PRE 14A,2024-09-03,2.35,4000,6000,"1:4,000-1:6,000",,False,True,
+"Steel Connect, Inc.",STCN,2024-12-09,,,,,,,,,,no proxy after 13E3
+SUPERIOR ENERGY SERVICES INC,CIK 0000886835,2024-12-17,,,,,,,,,,no proxy after 13E3
+"Vacasa, Inc.",VCSA,2025-01-31,PREM14A,2025-01-31,5.02,,,,,False,True,
+"NeueHealth, Inc.",NEUE,2025-02-03,PREM14A,2025-02-03,7.33,,,,,False,True,
+"Leafly Holdings, Inc. /DE",LFLY,2025-04-11,PRE 14A,2025-04-11,2.80,,,,,False,False,
+"CLS Holdings USA, Inc.",CLSH,2025-05-01,PRE 14A,2025-05-01,,4000000,4000000,,"June 24, 2025",False,True,
+Hall of Fame Resort & Entertainment Co,HOFV,2025-07-11,DEFM14A,2025-08-08,0.90,,,,"September 16, 2025",False,True,
+"Anebulo Pharmaceuticals, Inc.",ANEB,2025-07-23,PRE 14A,2025-07-23,3.50,,,"1:2,500-1:7,500","August 22, 2025",False,True,
+MOBIVITY HOLDINGS CORP.,MFON,2025-08-01,PRE 14A,2025-08-01,0.29,25000,25000,,,False,False,
+TELUS International (Cda) Inc.,Cda,2025-09-18,,,,,,,,,,no proxy after 13E3
+"TILE SHOP HOLDINGS, INC.",TTSH,2025-10-06,PRE 14A,2025-10-06,6.60,2000,4000,"1:2,000-1:4,000",,False,True,
+RIDGEFIELD ACQUISITION CORP,RDGA,2025-10-20,DEF 14C,2025-12-12,0.02,10000,10000,,,False,True,
+"LakeShore Biopharma Co., Ltd.",LSBCF,2025-11-26,,,,,,,,,,no proxy after 13E3
+"5&2 Studios, Inc.",CIK 0001733443,2025-12-31,PRE 14A,2025-12-31,3.75,173750,173750,,,False,True,
+CYANOTECH CORP,CYAN,2026-01-09,,,,,,,,,,no proxy after 13E3
+"KORE Group Holdings, Inc.",KORE,2026-04-15,DEFM14A,2026-06-12,9.25,,,,,False,True,

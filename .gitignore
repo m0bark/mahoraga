@@ -1,0 +1,75 @@
+# ---------------------------------------------------------------- secrets
+# Live credentials. These are NEVER committed. Each has a .example sibling
+# that documents the shape without the value.
+research/sheet/config.json
+discord-color-bot/.env
+discord-color-bot/token.txt
+*.env
+!*.env.example
+*secret*
+*credentials*
+
+# ------------------------------------------------------------ environments
+.venv/
+**/.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ------------------------------------------------------------------- data
+# 1.5 GB of downloaded market data and SEC filings. Every one of these is
+# REGENERABLE by a script in the repo, which is why none of them belongs in
+# git. The fetchers are committed; their output is not.
+#   research/sheet/fetch.py          prices, fundamentals, option chains
+#   research/sheet/sec_pit.py        SEC XBRL companyfacts -> PIT panel
+#   research/sheet/fetch_raw_px.py   unadjusted closes + split history
+#   research/sheet/grid.py           the PIT universe grid
+#   research/sheet/pit_quality.py    the nine-leg F-Score panel
+research/sheet/cache/
+research/sheet/cache_long/
+research/sheet/sec_raw/
+research/analysts/coverage/
+research/insider/raw/
+research/insider/compact/
+research/**/raw/
+*.zip
+*.csv.gz
+
+# Derived event ledgers and study outputs. Each is the product of a committed
+# script and is rebuilt by running it, so committing them would mean carrying
+# tens of megabytes that go stale the moment the data updates.
+research/dip_atlas/*.csv
+research/screen/*.csv
+research/surges/*.csv
+research/panic_reversal/*.csv
+research/analysts/*.csv
+
+# generated workbooks and reports, rebuilt by build_workbook.py
+*.xlsx
+*.xlsm
+
+# large intermediates
+*.parquet
+*.pkl
+*.h5
+
+# ------------------------------------------------------------------- logs
+*.log
+logs/
+research/sheet/logs/
+
+# ----------------------------------------------------------------- os junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------- unrelated side projects
+# Separate work that happens to live in this folder. Excluded to keep the
+# repo about the research, and because both carry their own credentials.
+discord-color-bot/
+colorbot-upload/
+anonymous-insta_stories-viewer/

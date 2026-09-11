@@ -1,0 +1,8 @@
+[
+ "in_fvg + mom_top30 + calm_vix",
+ "at_support + mom_top30 + scared_vix",
+ "in_fvg + q_uptrend + mom_top30",
+ "in_fvg + mom_top30",
+ "in_fvg + mom_top30 + market_up",
+ "at_support + mom_top30 + market_up"
+]

@@ -1,0 +1,20 @@
+tic,exp,clear,entry_med,spread_pct,cost99,gross99,net99_fee38,days,note
+INCY,2024-06-10,60.0,57.425,4.48,5685.08,254.92,216.92,28,Dutch; cleared 60; 93% accepted
+WIX,2026-04-01,92.0,89.517,2.77,8862.23,245.77,207.77,27,Dutch 80-92; cleared MAX; all accepted
+ANEB,2026-01-26,3.5,1.11,215.32,109.89,236.61,198.61,35,fixed 3.50 going-private; stub collapsed to ~1.10
+OPTU,2026-06-30,2.5,1.25,100.0,123.75,123.75,85.75,29,fixed 2.50; 48.6% prorate; deep-discount stub
+MLCI,2026-02-04,9.43,8.245,14.37,816.25,117.32,79.32,37,fixed 9.43
+RBNE,2026-04-24,3.0,2.04,47.06,201.96,95.04,57.04,31,"fixed 3.00; 339,775 of 1.0M accepted were ODD LOTS; 1:15 rsplit Jul-2026"
+SCHL,2026-04-21,40.0,39.09,2.33,3869.91,90.09,52.09,29,Dutch 36-40; cleared MAX; all accepted
+CNNE,2024-04-01,22.95,22.04,4.13,2181.96,90.09,52.09,31,Dutch 20.75-23.75; cleared 22.95; no prorate
+OSPN,2023-12-11,10.5,10.065,4.32,996.44,43.06,5.06,28,Dutch 9.50-11.00; cleared 10.50
+GPRK,2024-04-17,10.0,9.685,3.25,958.81,31.19,-6.81,28,Dutch; cleared 10.00; all accepted
+YEXT,2026-03-18,5.75,5.53,3.98,547.47,21.78,-16.22,36,Dutch 5.75-6.50; cleared MIN; ~39% prorate
+HTT,2026-06-24,3.2,3.0,6.67,297.0,19.8,-18.2,29,Dutch 2.80-3.20; cleared MAX; 87% accepted
+MTBLY,2025-09-30,3.0,2.85,5.26,282.15,14.85,-23.15,27,fixed 3.00/ADS
+EXFY,2026-06-10,1.2,1.15,4.35,113.85,4.95,-33.05,28,Dutch; cleared 1.20; 100% accepted
+CFNB,2025-06-27,18.5,18.7,-1.07,1851.3,-19.8,-57.8,38,fixed 18.50; oversubscribed; stock at/above offer
+MNST,2024-06-05,53.0,53.24,-0.45,5270.76,-23.76,-61.76,28,Dutch 53-60; cleared MIN; 48% prorate; 2:1 split Aug-2026
+TORO,2025-08-08,2.75,2.995,-8.18,296.51,-24.26,-62.26,29,fixed 2.75; UNDERsubscribed; stock above offer
+WEX,2025-03-25,154.0,155.205,-0.78,15365.3,-119.3,-157.3,27,Dutch 148-170; cleared 154; prorated
+RUM,2025-02-05,7.5,12.49,-39.95,1236.51,-494.01,-532.01,33,fixed 7.50; stock traded 10-13; NO arb

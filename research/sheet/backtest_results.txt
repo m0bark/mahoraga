@@ -1,0 +1,44 @@
+universe 503 names | 926 trading days | 2023-01-03 .. 2026-09-09
+computing signals as-of each month end (no look-ahead) ...
+16,502 (date, symbol) observations over 33 rebalance dates
+
+===== 21 trading days forward (~1 month) =====
+signal                     dates  picks   signal   random    EDGE   win%      p
+-------------------------------------------------------------------------------
+momentum top 10%              31     27    4.37%    1.49%   2.88%    61%  0.056
+momentum top 20%              31     66    2.65%    1.47%   1.18%    68%  0.187
+momentum bottom 10%           31     25    1.84%    1.46%   0.38%    58%  0.574
+IN ZONE (price anchors)       31    103    0.72%    1.50%  -0.78%    32%  0.020
+IN ZONE + above 200sma        31     49    0.92%    1.48%  -0.56%    35%  0.102
+above 200-SMA                 31    333    1.60%    1.51%   0.09%    52%  0.608
+below 200-SMA                 31    167    1.22%    1.51%  -0.29%    48%  0.390
+RSI < 30                      21     18    0.84%    1.47%  -0.64%    43%  0.521
+RSI > 70                      29     42    1.57%    1.35%   0.22%    59%  0.742
+within 2% of support          31     88    0.97%    1.46%  -0.49%    35%  0.035
+mom top20 + above200          31     66    2.65%    1.50%   1.15%    65%  0.186
+
+===== 63 trading days forward (~3 months) =====
+signal                     dates  picks   signal   random    EDGE   win%      p
+-------------------------------------------------------------------------------
+momentum top 10%              29     27   13.58%    4.50%   9.08%    66%  0.000
+momentum top 20%              29     66    8.70%    4.54%   4.16%    62%  0.001
+momentum bottom 10%           29     25    2.76%    4.54%  -1.78%    41%  0.073
+IN ZONE (price anchors)       29    106    2.56%    4.52%  -1.97%    34%  0.002
+IN ZONE + above 200sma        29     50    3.06%    4.54%  -1.48%    24%  0.023
+above 200-SMA                 29    333    4.90%    4.45%   0.45%    66%  0.181
+below 200-SMA                 29    166    3.47%    4.51%  -1.03%    34%  0.062
+RSI < 30                      19     18    3.52%    4.41%  -0.89%    68%  0.477
+RSI > 70                      27     44    5.89%    4.92%   0.97%    56%  0.637
+within 2% of support          29     88    3.54%    4.53%  -0.99%    38%  0.021
+mom top20 + above200          29     66    8.70%    4.51%   4.19%    62%  0.002
+
+EDGE = signal basket minus random baskets of the same size, drawn from
+the SAME survivorship-biased universe on the SAME dates. Both legs
+carry the bias, so EDGE does not. Only EDGE means anything; the raw
+'signal' column is inflated and is shown only to prove that.
+p = two-sided date-block bootstrap. 11 signals x 2 horizons = 22 tests,
+so the Bonferroni bar is p < 0.0023.
+
+NOT TESTED: RATE (no point-in-time fundamentals exist in yfinance) and
+UNUSUAL options (no historical option chains). Both would require
+look-ahead to 'backtest' and are therefore left unmeasured, not faked.

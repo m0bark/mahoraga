@@ -1,0 +1,10 @@
+symbol,type,level,note,fired
+AAPL,sma200_cross_down,,trend break,
+AMD,rsi_below,30,oversold,
+KO,near_support,2.0,within 2% of support,
+ANY,unusual_options,,big money anywhere in the index,
+NVDA,price_below,213.45,"3R trigger, armed by confirm.py",
+MU,price_below,926.26,"3R trigger, armed by confirm.py",
+AVGO,price_below,360.90,"3R trigger, armed by confirm.py",
+GOOGL,price_below,325.00,"3R trigger, armed by confirm.py",
+MSFT,price_below,491.85,"3R trigger, armed by confirm.py",
