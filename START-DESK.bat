@@ -51,6 +51,18 @@ if not exist "%VPY%" (
 )
 
 REM ---------- 3. install / update dependencies ----------
+if not exist "requirements.txt" (
+  echo(
+  echo [X] requirements.txt was not found next to this launcher.
+  echo     Current folder: %CD%
+  echo(
+  echo     This almost always means the ZIP was NOT fully extracted - for
+  echo     example the .bat was double-clicked from inside the zip preview.
+  echo     Fix: right-click the downloaded .zip, choose "Extract All", open the
+  echo     extracted "shaheen-master" folder, and run START-DESK.bat from there.
+  echo(
+  pause & exit /b 1
+)
 echo [3/7] Ensuring dependencies (quiet; slow only on first run)...
 "%VPY%" -m pip install --upgrade pip --quiet
 "%VPY%" -m pip install -r requirements.txt --quiet
