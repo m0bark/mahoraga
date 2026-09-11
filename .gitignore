@@ -53,8 +53,13 @@ research/analysts/*.csv
 # is refetched. Two inputs are deliberate exceptions and stay tracked:
 # sp500.csv is the universe definition, finalists.json the frozen search result.
 research/sheet/*.csv
-!research/sheet/sp500.csv
-!research/sheet/optimize_train.csv
+# Exceptions, and each is an INPUT or your own state rather than an output:
+!research/sheet/sp500.csv          # the universe definition
+!research/sheet/sec_ciks.csv       # ticker to SEC CIK mapping
+!research/sheet/watchlist.csv      # your watchlist
+!research/sheet/following.csv      # analysts you follow
+!research/sheet/optimize_train.csv # frozen search result
+!research/sheet/combo_train.csv    # frozen search result
 
 # generated workbooks and reports, rebuilt by build_workbook.py
 *.xlsx
