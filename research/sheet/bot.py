@@ -183,6 +183,14 @@ def cmd_q(arg):
 
 def cmd_upgrades(_):
     d = load("analysts")
+    # last_action only exists when a local ratings tape has been swept in
+    # (research/analysts/ratings_tape.csv). On a machine without it the
+    # analysts sheet carries only the yfinance consensus, so say so plainly
+    # instead of throwing on a missing column.
+    if "last_action" not in d.columns:
+        return ("no local rating tape on this machine yet -- run "
+                "research/analysts/copy_desk.py to build one, then /upgrades "
+                "will list dated upgrades and initiations")
     d = d[d.last_action.astype(str).str.startswith(("Upgrade", "Initiates"))]
     d = d.sort_values("days_ago").head(12)
     if d.empty:
@@ -382,11 +390,17 @@ def offset() -> int:
 
 def poll(once: bool = False) -> None:
     c = cfg()
-    allowed = str(c.get("telegram_chat_id", "")).strip()
+    # The owner's chat drives alerts; `allowed_chats` is an optional guest list
+    # so a friend can query the same desk without being able to arm alerts on
+    # the owner's phone. Everyone else still gets silence.
+    owner = str(c.get("telegram_chat_id", "")).strip()
+    guests = {str(x).strip() for x in c.get("allowed_chats", []) if str(x).strip()}
+    allowed = {owner} | guests if owner else guests
     if not allowed:
         say("no telegram_chat_id in config.json -- run alerts.py --setup first")
         return
-    say(f"bot listening. only chat {allowed} is answered. Ctrl+C to stop.")
+    say(f"bot listening. {len(allowed)} chat(s) answered: {sorted(allowed)}. "
+        "Ctrl+C to stop.")
     while True:
         r = api("getUpdates", offset=offset() + 1, timeout=50)
         if not r.get("ok"):
@@ -401,7 +415,7 @@ def poll(once: bool = False) -> None:
             m = u.get("message") or u.get("edited_message") or {}
             chat = str((m.get("chat") or {}).get("id", ""))
             txt = m.get("text", "")
-            if chat != allowed:
+            if chat not in allowed:
                 say(f"ignored message from chat {chat}")
                 continue
             say(f"<- {txt}")

@@ -255,7 +255,7 @@ const TABS=[["summary","Summary"],["logs","Logs"],["momentum","Momentum"],
  ["technicals","Technicals"]];
 const COLS={
  summary:["symbol","shortName","sector","price","chg_1d_pct","RATE","MOMENTUM_SCORE",
-   "vs_200sma","zone_status","perfect_buy","rsi14","halal_auto","hot","last_action"],
+   "vs_200sma","zone_status","perfect_buy","discount_to_buy_pct","rsi14","halal_auto","hot","last_action"],
  momentum:["symbol","sector","price","MOMENTUM_SCORE","hot","ret_1m_pct","ret_3m_pct",
    "ret_6m_pct","mom_12_1_pct","rs_3m_vs_spy","rsi14","vs_200sma"],
  whyitmoved:["symbol","name","sector","move_pct","move_in_sigma","move_where",
@@ -276,6 +276,7 @@ const COLS={
 const PRESETS={summary:[
   ["Momentum leaders",r=>r.MOMENTUM_SCORE>=85],["HOT",r=>r.hot==="HOT"],
   ["In buy zone",r=>r.zone_status==="IN ZONE"||r.zone_status==="AT ZONE"],
+  ["Near perfect buy",r=>r.discount_to_buy_pct!=null&&r.discount_to_buy_pct>=-3],
   ["Rate A/B",r=>r.RATE>=60],["Halal pass",r=>r.halal_auto==="pass"],
   ["Below 200d",r=>r.vs_200sma==="BELOW"],["Oversold",r=>r.rsi14<35],
   ["Moved >2%",r=>Math.abs(r.chg_1d_pct)>2]],

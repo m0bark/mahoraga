@@ -212,20 +212,30 @@ def build_frames() -> dict[str, pd.DataFrame]:
     # the raw join is 21 unordered columns of mixed provenance; this turns it
     # into something scannable: freshness first, then who said what, then the
     # aggregate. Sorted by how recently anything happened.
-    an["last_date"] = pd.to_datetime(an.get("last_date"), errors="coerce")
+    # DataFrame.get returns a bare None for a missing column, and
+    # pd.to_numeric(None)/pd.to_datetime(None) collapse to a scalar NaN/NaT
+    # whose .fillna()/.dt do not exist. When this machine has no local ratings
+    # tape `an` carries only the tape-derived columns that survived the merge,
+    # so read every optional column through a helper that always hands back a
+    # Series aligned to `an` -- absent columns become an all-NaN column, which
+    # is the correct "no data" state rather than a crash.
+    def acol(name: str) -> pd.Series:
+        return an[name] if name in an.columns else pd.Series(np.nan, index=an.index)
+
+    an["last_date"] = pd.to_datetime(acol("last_date"), errors="coerce")
     an["days_ago"] = (pd.Timestamp.now().normalize() - an["last_date"]).dt.days
     an["FRESH"] = np.select(
         [an["days_ago"] <= 3, an["days_ago"] <= 14, an["days_ago"] <= 45],
         ["TODAY-ISH", "THIS WEEK", "THIS MONTH"], default="")
-    up = pd.to_numeric(an.get("n_upgrades"), errors="coerce").fillna(0)
-    dn = pd.to_numeric(an.get("n_downgrades"), errors="coerce").fillna(0)
+    up = pd.to_numeric(acol("n_upgrades"), errors="coerce").fillna(0)
+    dn = pd.to_numeric(acol("n_downgrades"), errors="coerce").fillna(0)
     an["net_upgrades"] = (up - dn).astype(int)
     an["tilt"] = np.select([an["net_upgrades"] > 0, an["net_upgrades"] < 0],
                            ["UPGRADING", "DOWNGRADING"], default="flat")
-    tgt = pd.to_numeric(an.get("last_target"), errors="coerce")
+    tgt = pd.to_numeric(acol("last_target"), errors="coerce")
     an["last_target_upside_pct"] = ((tgt / an["price"] - 1) * 100).round(1)
     # recommendationMean is 1=Strong Buy .. 5=Sell, which reads backwards
-    rm = pd.to_numeric(an.get("recommendationMean"), errors="coerce")
+    rm = pd.to_numeric(acol("recommendationMean"), errors="coerce")
     an["consensus"] = np.select(
         [rm <= 1.5, rm <= 2.5, rm <= 3.5, rm <= 4.5],
         ["STRONG BUY", "BUY", "HOLD", "SELL"], default="STRONG SELL")

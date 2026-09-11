@@ -73,3 +73,6 @@ desktop.ini
 discord-color-bot/
 colorbot-upload/
 anonymous-insta_stories-viewer/
+
+# telegram bot runtime offset - per-machine state, not shared
+research/sheet/bot_offset.txt
