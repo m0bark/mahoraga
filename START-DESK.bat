@@ -51,21 +51,30 @@ if not exist "%VPY%" (
 )
 
 REM ---------- 3. install / update dependencies ----------
-if not exist "requirements.txt" (
+REM Verify we are actually inside the extracted project, using the app itself
+REM as the signal (not requirements.txt). If server.py is missing, the ZIP was
+REM not fully extracted or the .bat is being run from the wrong place.
+if not exist "research\sheet\server.py" (
   echo(
-  echo [X] requirements.txt was not found next to this launcher.
+  echo [X] This launcher is not inside the extracted project folder.
   echo     Current folder: %CD%
   echo(
-  echo     This almost always means the ZIP was NOT fully extracted - for
-  echo     example the .bat was double-clicked from inside the zip preview.
-  echo     Fix: right-click the downloaded .zip, choose "Extract All", open the
-  echo     extracted "shaheen-master" folder, and run START-DESK.bat from there.
+  echo     Right-click the downloaded .zip, choose "Extract All", then open the
+  echo     extracted "shaheen-master" folder and run START-DESK.bat from THERE.
+  echo     Do not run it from inside the zip preview window.
   echo(
   pause & exit /b 1
 )
 echo [3/7] Ensuring dependencies (quiet; slow only on first run)...
 "%VPY%" -m pip install --upgrade pip --quiet
-"%VPY%" -m pip install -r requirements.txt --quiet
+REM Install from requirements.txt when present, but never DEPEND on it: fall
+REM back to a built-in list so a missing/misplaced requirements.txt can never
+REM block the launcher again.
+if exist "requirements.txt" (
+  "%VPY%" -m pip install -r requirements.txt --quiet
+) else (
+  "%VPY%" -m pip install pandas numpy requests yfinance openpyxl xlsxwriter scikit-learn flask --quiet
+)
 if errorlevel 1 (
   echo [!] pip reported a problem. Trying to continue with what is installed.
 )
