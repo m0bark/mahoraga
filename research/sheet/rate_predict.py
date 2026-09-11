@@ -95,6 +95,7 @@ VOL_WINDOW = 63                    # trailing window for realised volatility
 MOM_WINDOWS = {"1m": 21, "3m": 63, "6m": 126, "12m": 252}
 SMA_WINDOWS = (50, 200)
 TRADING_DAYS = 252
+MIN_ROW_COVERAGE = 0.50            # below this a price row is a market holiday
 
 # Rule 5: fit on or before the train cut, judge once on or after holdout start.
 # The three months between are dropped because a 63-day forward label on a
@@ -158,17 +159,25 @@ def build_monthly() -> pd.DataFrame:
     if missing:
         raise SystemExit(f"cache is missing {missing}; cannot run this angle")
 
-    # px_close.csv carries a few ALL-NaN calendar rows (market holidays that
-    # made it into the index). They are not missing data, they are not trading
-    # days, and leaving them in does two kinds of damage: every rolling window
-    # that spans one returns NaN, and "i + 63 rows forward" stops meaning 63
-    # TRADING days forward. Both were measured: with the holiday rows in place
-    # the 2026-05-29 decision date lost its whole trailing feature block.
-    blank = C.index[C.isna().all(axis=1)]
-    if len(blank):
-        say(f"  dropped {len(blank)} all-NaN calendar rows from the price index "
-            f"({', '.join(d.strftime('%Y-%m-%d') for d in blank[:4])})")
-        C = C.drop(index=blank)
+    # px_close.csv carries US market HOLIDAYS as rows. They are not thin
+    # trading days: 2026-05-25 (Memorial Day) and 2026-09-07 (Labor Day) have
+    # exactly ONE non-null column out of 509, the VIX, which the vendor quotes
+    # on a different calendar. They are not missing data either -- no trading
+    # happened -- and leaving them in does two separate kinds of damage:
+    #   * every rolling window spanning one returns NaN, which silently deleted
+    #     the whole trailing feature block for the 2026-05-29 decision date;
+    #   * "i + 63 rows forward" stops meaning 63 TRADING days forward, so the
+    #     forward label would measure a different horizon on different dates.
+    # So the test is cross-sectional coverage, not all-NaN, which the first run
+    # of this file got wrong and the 2026-05-29 drop exposed.
+    cover = C.notna().mean(axis=1)
+    holidays = C.index[cover < MIN_ROW_COVERAGE]
+    if len(holidays):
+        say(f"  dropped {len(holidays)} non-trading rows from the price index "
+            f"({', '.join(d.strftime('%Y-%m-%d') for d in holidays[:4])}"
+            f"{' ...' if len(holidays) > 4 else ''}) -- "
+            f"max coverage on them {cover[holidays].max() * 100:.1f}%")
+        C = C.drop(index=holidays)
     still = [s for s in (PROXY, MKT, "GLD", "USO") if C[s].isna().any()]
     if still:
         say(f"  WARNING {still} still carry gaps inside the trading index; "
@@ -471,8 +480,45 @@ def holdout_table(tr: pd.DataFrame, ho: pd.DataFrame, best: str,
     return hits
 
 
+def max_auc_shift_test(ho: pd.DataFrame,
+                       probs: dict[str, np.ndarray]) -> tuple[float, float]:
+    """The exact multiplicity correction: a MAX-statistic block-shift test.
+
+    Eleven predictors were examined, so the honest question is not "is THIS
+    AUC extreme" but "is the MOST extreme of eleven AUCs more extreme than the
+    most extreme of eleven AUCs computed on a misaligned label series". Taking
+    the max inside every shift prices the search exactly, with no Bonferroni
+    approximation and no assumption about the correlation between the eleven
+    predictors -- which is high, so Bonferroni would be far too harsh.
+
+    Returns the real max statistic and its p-value."""
+    y = ho.y.to_numpy()
+    names = list(probs)
+
+    def stat(labels: np.ndarray) -> float:
+        best = 0.0
+        if len(set(labels)) < 2:
+            return np.nan
+        for c in names:
+            best = max(best, abs(roc_auc_score(labels, probs[c]) - 0.5))
+        return best
+
+    real = stat(y)
+    null = np.array([s for s in (stat(np.roll(y, k))
+                                 for k in range(1, len(y))) if np.isfinite(s)])
+    p = float((null >= real).mean())
+    say("")
+    say("  MAX-STATISTIC TEST across all 11 predictors at once")
+    say(f"    real max |AUC - 0.5| = {real:.3f}  "
+        f"({max(names, key=lambda c: abs(roc_auc_score(y, probs[c]) - 0.5))})")
+    say(f"    same statistic on {len(null)} misaligned label series: "
+        f"median {np.median(null):.3f}, max {null.max():.3f}")
+    say(f"    p = {p:.3f}  <- this is the number that prices the search")
+    return real, p
+
+
 def univariate_table(tr: pd.DataFrame, ho: pd.DataFrame, ho_maj: float,
-                     bar: float) -> tuple[str, np.ndarray]:
+                     bar: float) -> tuple[str, np.ndarray, dict[str, np.ndarray]]:
     """Each predictor alone. Returns the best predictor BY AUC and its
     probability vector, so the block-shift null can be aimed at the strongest
     thing in the table rather than at the one the author liked."""
@@ -507,7 +553,7 @@ def univariate_table(tr: pd.DataFrame, ho: pd.DataFrame, ho_maj: float,
     say("  predictor is at the top whichever way its sign points.")
     best = max(rows, key=lambda r: abs(r[5] - 0.5))
     say(f"  strongest by |AUC - 0.5|: {best[0]} at AUC {best[5]:.3f}")
-    return best[0], probs[best[0]]
+    return best[0], probs[best[0]], probs
 
 
 def auc_z(y: np.ndarray, auc: float) -> float:
@@ -717,7 +763,7 @@ def main() -> None:
     say(f"  BEST-SINGLE selected on train CV only: {best}")
     preds = run_variants(tr, ho, best)
     hits = holdout_table(tr, ho, best, tr_maj, ho_maj, rt_const, preds, bar)
-    top_auc, top_prob = univariate_table(tr, ho, ho_maj, bar)
+    top_auc, top_prob, all_probs = univariate_table(tr, ho, ho_maj, bar)
 
     say("")
     say("=" * 84)
@@ -734,7 +780,9 @@ def main() -> None:
     say("")
     say("  The two-sided AUC p-value is the one to read for the univariate row,")
     say("  because that predictor was chosen FOR having an extreme AUC and its")
-    say("  sign was not pre-registered.")
+    say("  sign was not pre-registered. Even that is not enough, because the")
+    say("  choice was made over eleven candidates. The next test prices that.")
+    max_auc_shift_test(ho, all_probs)
 
     shuffled_control(tr, ho, hits, ho_maj, n_shuf)
     beta_neutral_check(m, bar)

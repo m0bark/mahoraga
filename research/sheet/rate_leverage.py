@@ -519,7 +519,7 @@ def report_split_residuals(d: pd.DataFrame) -> None:
                 f"{series_t(m_ho.residual):>+7.2f}  {agree}")
 
 
-def report_longonly(ho: pd.DataFrame) -> pd.DataFrame:
+def report_longonly(tr: pd.DataFrame, ho: pd.DataFrame) -> pd.DataFrame:
     say("")
     say("=" * 86)
     say("  4. COULD A LONG-ONLY CASH ACCOUNT ACT? TOP DECILE, RAW RETURNS")
@@ -560,8 +560,8 @@ def report_longonly(ho: pd.DataFrame) -> pd.DataFrame:
     say("  holds more beta in a rising market is a leverage choice, not a screen.")
     say("")
     say(f"  {'feature':<18}{'d bmkt':>8}{'d brate':>9}{'excess':>9}{'t':>7}"
-        f"{'expl':>8}{'resid':>8}{'t':>7}{'resid CAGR':>12}")
-    say("  " + "-" * 78)
+        f"{'expl':>8}{'resid':>8}{'t':>7}{'resid CAGR':>12}{'hit':>7}")
+    say("  " + "-" * 85)
     s = pd.DataFrame(rows)
     for c in FEATURES:
         if c not in legs:
@@ -573,9 +573,96 @@ def report_longonly(ho: pd.DataFrame) -> pd.DataFrame:
         cagr = annualise(m.uni_raw.mean() + re_)
         say(f"  {c:<18}{m.u_b_mkt.mean():>+8.2f}{m.u_b_rate.mean():>+9.2f}"
             f"{ex:>+8.2f}%{series_t(m.excess):>+7.2f}{exp:>+7.2f}%"
-            f"{re_:>+7.2f}%{series_t(m.u_residual):>+7.2f}{cagr:>+11.2f}%")
-    say("  " + "-" * 78)
+            f"{re_:>+7.2f}%{series_t(m.u_residual):>+7.2f}{cagr:>+11.2f}%"
+            f"{(m.excess > 0).mean():>7.0%}")
+    say("  " + "-" * 85)
+    say("  hit = share of holdout months the top decile beat the measurable")
+    say("  universe. Overlapping windows make consecutive months near-copies of")
+    say("  each other, so a high hit rate on 52 months is not 52 coin flips.")
+
+    say("")
+    say("  THE SAME LONG-ONLY EXCESS IN THE TRAINING HALF, for consistency.")
+    say("  A screen you would actually have adopted has to have worked in the")
+    say("  half you were allowed to look at, and then again in the half you")
+    say("  were not. Either column alone is a coin flip with a story.")
+    say("")
+    say(f"  {'feature':<18}{'tr excess':>11}{'t':>7}{'tr resid':>10}{'t':>7}"
+        f"{'ho excess':>11}{'t':>7}{'ho resid':>10}{'t':>7}  both")
+    say("  " + "-" * 84)
+    for c in FEATURES:
+        if c not in legs:
+            continue
+        a = monthly_legs(tr, c, "y_dm")
+        b = legs[c]
+        if a.empty:
+            continue
+        both = ("same" if np.sign(a.u_residual.mean())
+                == np.sign(b.u_residual.mean()) else "FLIPS")
+        say(f"  {c:<18}{a.excess.mean():>+10.2f}%{series_t(a.excess):>+7.2f}"
+            f"{a.u_residual.mean():>+9.2f}%{series_t(a.u_residual):>+7.2f}"
+            f"{b.excess.mean():>+10.2f}%{series_t(b.excess):>+7.2f}"
+            f"{b.u_residual.mean():>+9.2f}%{series_t(b.u_residual):>+7.2f}"
+            f"  {both}")
+    say("  " + "-" * 84)
     return s
+
+
+def report_sectors(ho: pd.DataFrame) -> None:
+    """What is the top decile actually buying?
+
+    A balance-sheet ratio is not sector-neutral. The most liquid balance sheets
+    in this universe are cash-rich non-earners, and in the 2022-2026 holdout
+    that is a bet on one or two sectors with a market beta attached. The
+    decomposition already prices the beta; this names the bet."""
+    path = os.path.join(LONG, "..", "sp500.csv")
+    if not os.path.exists(path):
+        say("\n  sp500.csv absent; top-decile sector composition not reported.")
+        return
+    sp = pd.read_csv(path)
+    if "sector" not in sp.columns or "symbol" not in sp.columns:
+        say("\n  sp500.csv has no symbol/sector pair; composition skipped.")
+        return
+    sec = dict(zip(sp.symbol, sp.sector))
+    say("")
+    say("  WHAT THE TOP DECILE HOLDS, holdout months, three largest sectors")
+    say("  " + "-" * 78)
+    for c in FEATURES:
+        rows = []
+        for _, g in ho.groupby("date"):
+            x = g[[c, "symbol"]].dropna()
+            if len(x) < MIN_NAMES_MONTH or x[c].nunique() < N_DEC:
+                continue
+            q = deciles(x[c])
+            rows.extend(x.loc[q == q.max(), "symbol"].tolist())
+        if not rows:
+            continue
+        share = (pd.Series([sec.get(s, "unknown") for s in rows])
+                 .value_counts(normalize=True).head(3))
+        txt = "  ".join(f"{k} {v:.0%}" for k, v in share.items())
+        say(f"  {c:<18}{txt}")
+
+
+def report_calibration(d: pd.DataFrame) -> None:
+    """How much does averaging-then-compounding overstate a CAGR?
+
+    Section 4 annualises the MEAN of overlapping 63-day returns, which is not
+    the same arithmetic as compounding a portfolio. The size of the gap has to
+    be on the page, because rule 4's 14.82% bar was produced by real
+    compounding and comparing across two different arithmetics is how a 1%
+    method artefact gets reported as an edge."""
+    m = d.groupby("date").fwd63.mean()
+    full = annualise(m.mean())
+    say("")
+    say("  CALIBRATION OF THE ANNUALISATION, because this is where a fake")
+    say("  percent point comes from:")
+    say(f"    whole-universe mean fwd63 {m.mean():+.2f}% annualised this way = "
+        f"{full:+.2f}%")
+    say(f"    the same universe actually compounded (rule 4)  = "
+        f"{EW_BENCHMARK_CAGR:+.2f}%")
+    say(f"    so this arithmetic runs about {full - EW_BENCHMARK_CAGR:+.2f} "
+        f"points HOT. Every CAGR in the table above carries")
+    say("    roughly that bias, which is why the top-versus-universe columns")
+    say("    are the comparison and the absolute CAGR is not.")
 
 
 def report_verdict(uncond: pd.DataFrame, dec: pd.DataFrame,
@@ -639,7 +726,9 @@ def main() -> None:
     legs = report_regimes(d)
     dec = report_decomposition(legs)
     report_split_residuals(d)
-    lo = report_longonly(ho)
+    lo = report_longonly(tr, ho)
+    report_sectors(ho)
+    report_calibration(d)
     report_verdict(uncond, dec, lo)
 
 

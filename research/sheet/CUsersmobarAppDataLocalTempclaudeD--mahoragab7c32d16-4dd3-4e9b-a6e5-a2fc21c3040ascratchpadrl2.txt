@@ -1,0 +1,225 @@
+LOADING
+======================================================================================
+  SETUP
+======================================================================================
+  50,825 rows | 465 symbols | 158 months | 2013-04 .. 2026-05
+  regime by ACTUAL next 63d of TLT: 73 months rates UP, 85 rates DOWN
+  effective independent observations ~ 52 (63-day labels on monthly dates)
+
+  feature             coverage  months usable        p5    median       p95
+  -------------------------------------------------------------------------
+  debt_equity           57.7%            158     +0.38     +1.84    +12.22
+  lt_debt_equity        50.7%            158     +0.14     +0.68     +3.86
+  current_ratio         82.1%            158     +0.58     +1.32     +3.82
+  cash_to_assets        86.3%            158     +0.47     +6.06    +25.19
+  opinc_to_ltdebt       36.3%            158     +0.04     +0.35     +2.24
+  pe                    70.9%            158     +8.32    +25.28   +119.01
+  pb                    79.2%            158     +1.05     +3.94    +35.32
+
+  opinc_to_ltdebt is thin by construction: it needs roic AND a
+  positive lt_debt_equity on the same row. Cost of that restriction is
+  the coverage figure above, not a silent subset.
+
+  train    31,912 rows  2013-04 .. 2021-09  (102 months)
+  embargo     994 rows dropped (3 months of overlapping labels)
+  holdout  17,919 rows  2022-01 .. 2026-05  (53 months)
+
+======================================================================================
+  1. UNCONDITIONAL DECILE SPREADS -- no rate view at all
+======================================================================================
+  Seven pre-registered features, so the bar is |t| > sqrt(2 ln 7) = 1.97.
+  Divide every t by 1.7 first for the overlapping-label
+  inflation. y_dm = demeaned within month. y_bn = rule 2, beta252
+  regressed out within month.
+
+  feature             tr y_dm      t  ho y_dm      t  tr y_bn      t  ho y_bn      t   mono
+  ----------------------------------------------------------------------------------
+  debt_equity          +0.57%  +1.44   -1.27%  -1.70   -0.19%  -0.52   -0.55%  -0.79  +0.36
+  lt_debt_equity       +0.62%  +1.63   -0.83%  -1.00   +0.40%  +1.09   +0.08%  +0.11  +0.19
+  current_ratio        +1.98%  +6.05   +2.33%  +3.59   +2.01%  +6.49   +0.59%  +0.99  +0.84
+  cash_to_assets       +1.74%  +5.47   +2.32%  +4.49   +1.44%  +4.83   +0.05%  +0.10  +0.95
+  opinc_to_ltdebt      -1.16%  -2.11   -1.04%  -0.92   +0.34%  +0.67   -0.61%  -0.58  -0.33
+  pe                   +0.63%  +1.60   -1.20%  -1.80   +1.84%  +5.00   -1.81%  -2.89  -0.25
+  pb                   +1.37%  +3.89   -1.86%  -3.11   +2.76%  +8.50   -1.66%  -2.95  +0.52
+  ----------------------------------------------------------------------------------
+  0 of 7 survive BETA-NEUTRAL with a consistent sign and t past the haircut bar.
+
+======================================================================================
+  2. THE SAME SPREADS SPLIT BY THE ACTUAL RATE MOVE (lookahead, on purpose)
+======================================================================================
+  This is the ceiling on a correct FOMC call, not a tradable number.
+  A long-only cash account does not know the regime on the decision
+  date, so read this as diagnosis and section 1 as the trade.
+
+  Seven features in two regimes is K=14 variants, bar |t| > 2.30 before the 1.7x overlap haircut.
+
+  TARGET: month-demeaned
+  feature           regime        months    spread  t(monthly)   t/1.7
+  ----------------------------------------------------------------------
+  debt_equity       rates UP          72    +3.04%       +4.24   +2.50
+  debt_equity       rates DOWN        85    -2.61%       -3.49   -2.05
+  lt_debt_equity    rates UP          72    +0.10%       +0.15   +0.09
+  lt_debt_equity    rates DOWN        85    +0.19%       +0.32   +0.19
+  current_ratio     rates UP          72    +0.88%       +1.08   +0.64
+  current_ratio     rates DOWN        85    +2.57%       +3.23   +1.90
+  cash_to_assets    rates UP          72    +2.41%       +2.82   +1.66
+  cash_to_assets    rates DOWN        85    +1.03%       +1.33   +0.78
+  opinc_to_ltdebt   rates UP          72    -1.92%       -1.79   -1.05
+  opinc_to_ltdebt   rates DOWN        85    -0.42%       -0.45   -0.27
+  pe                rates UP          72    -3.44%       -3.22   -1.89
+  pe                rates DOWN        85    +2.25%       +2.65   +1.56
+  pb                rates UP          72    -4.12%       -3.49   -2.05
+  pb                rates DOWN        85    +3.51%       +3.88   +2.29
+
+  TARGET: beta-neutral
+  feature           regime        months    spread  t(monthly)   t/1.7
+  ----------------------------------------------------------------------
+  debt_equity       rates UP          72    +2.28%       +3.32   +1.95
+  debt_equity       rates DOWN        85    -2.47%       -3.66   -2.15
+  lt_debt_equity    rates UP          72    +0.43%       +0.75   +0.44
+  lt_debt_equity    rates DOWN        85    +0.19%       +0.35   +0.21
+  current_ratio     rates UP          72    -0.24%       -0.38   -0.23
+  current_ratio     rates DOWN        85    +2.52%       +3.82   +2.25
+  cash_to_assets    rates UP          72    +0.58%       +1.06   +0.62
+  cash_to_assets    rates DOWN        85    +0.86%       +1.43   +0.84
+  opinc_to_ltdebt   rates UP          72    -0.13%       -0.17   -0.10
+  opinc_to_ltdebt   rates DOWN        85    +0.02%       +0.02   +0.01
+  pe                rates UP          72    -2.06%       -2.44   -1.43
+  pe                rates DOWN        85    +2.04%       +2.51   +1.48
+  pb                rates UP          72    -2.22%       -2.44   -1.44
+  pb                rates DOWN        85    +3.59%       +4.13   +2.43
+
+======================================================================================
+  3. RULE 3 -- HOW MUCH IS JUST EXPOSURE TIMES THE REALISED FACTOR MOVE?
+======================================================================================
+  spread = d(market beta) x SPY_63d + d(rate beta) x TLT_63d + residual
+  Betas are from the BIVARIATE trailing-252d regression on SPY and TLT
+  together. d(.) is the top-decile mean minus the bottom-decile mean.
+  The residual is the only part that is a claim about the balance sheet.
+
+  feature           regime        d bmkt  d brate   spread    expl   resid   %expl  t resid
+  ---------------------------------------------------------------------------------
+  debt_equity       rates UP       -0.13    -0.24   +3.04%  +1.46%  +1.58%    +48%    +2.17
+  debt_equity       rates DOWN     -0.11    -0.31   -2.61%  -1.87%  -0.74%    +72%    -0.98
+  lt_debt_equity    rates UP       -0.12    +0.05   +0.10%  -0.56%  +0.66%   -576%    +1.05
+  lt_debt_equity    rates DOWN     -0.11    +0.03   +0.19%  -0.37%  +0.56%   -197%    +0.98
+  current_ratio     rates UP       +0.37    -0.10   +0.88%  +1.18%  -0.30%   +134%    -0.43
+  current_ratio     rates DOWN     +0.36    -0.13   +2.57%  +0.53%  +2.04%    +21%    +2.58
+  cash_to_assets    rates UP       +0.47    -0.15   +2.41%  +1.92%  +0.49%    +80%    +0.77
+  cash_to_assets    rates DOWN     +0.45    -0.23   +1.03%  +0.38%  +0.64%    +37%    +0.83
+  opinc_to_ltdebt   rates UP       -0.05    -0.04   -1.92%  -0.94%  -0.98%    +49%    -1.02
+  opinc_to_ltdebt   rates DOWN     +0.03    -0.02   -0.42%  -0.38%  -0.03%    +92%    -0.04
+  pe                rates UP       +0.08    +0.17   -3.44%  -1.57%  -1.87%    +46%    -2.05
+  pe                rates DOWN     +0.10    +0.25   +2.25%  +1.65%  +0.60%    +73%    +0.75
+  pb                rates UP       -0.04    +0.22   -4.12%  -2.27%  -1.86%    +55%    -1.74
+  pb                rates DOWN     +0.03    +0.29   +3.51%  +1.52%  +1.99%    +43%    +2.41
+  ---------------------------------------------------------------------------------
+  A %expl near 100 means the spread IS the two betas handed an answer
+  key, which is what rate_foresight.py found for price rate beta.
+  A %expl near 0 with a small spread means there was nothing to
+  explain in the first place -- check the spread column before
+  celebrating a clean residual.
+
+======================================================================================
+  3b. THE REGIME RESIDUALS ACROSS THE SEALED SPLIT
+======================================================================================
+  Same decomposition, computed separately on train months and holdout
+  months. A sign flip here ends the story for that cell.
+
+  feature           regime       tr mo  tr resid      t  ho mo  ho resid      t  sign
+  --------------------------------------------------------------------------------
+  debt_equity       rates UP        37    +2.92%  +3.76     32    +0.41%  +0.31  same
+  debt_equity       rates DOWN      65    +0.30%  +0.46     20    -4.11%  -1.77  FLIPS
+  lt_debt_equity    rates UP        37    +0.89%  +1.70     32    +0.65%  +0.51  same
+  lt_debt_equity    rates DOWN      65    +0.82%  +2.00     20    -0.31%  -0.15  FLIPS
+  current_ratio     rates UP        37    +0.78%  +0.94     32    -0.80%  -0.71  FLIPS
+  current_ratio     rates DOWN      65    +1.69%  +2.06     20    +3.18%  +1.54  same
+  cash_to_assets    rates UP        37    +1.57%  +1.93     32    +0.01%  +0.01  same
+  cash_to_assets    rates DOWN      65    +0.81%  +0.96     20    +0.11%  +0.06  same
+  opinc_to_ltdebt   rates UP        37    -2.25%  -1.41     32    +0.84%  +0.80  FLIPS
+  opinc_to_ltdebt   rates DOWN      65    +0.35%  +0.38     20    -1.26%  -0.58  FLIPS
+  pe                rates UP        37    -3.10%  -2.26     32    +0.50%  +0.46  FLIPS
+  pe                rates DOWN      65    +2.18%  +2.81     20    -4.53%  -2.33  FLIPS
+  pb                rates UP        37    -2.92%  -1.73     32    +0.03%  +0.02  FLIPS
+  pb                rates DOWN      65    +3.28%  +3.92     20    -2.22%  -1.13  FLIPS
+
+======================================================================================
+  4. COULD A LONG-ONLY CASH ACCOUNT ACT? TOP DECILE, RAW RETURNS
+======================================================================================
+  Holdout only, 2022-01 onward. Raw forward 63-day
+  return of the top decile, annualised the same way for the universe
+  so the comparison is arithmetic-identical. The bar is the equal-
+  weight universe at 14.82% and SPY at 14.78% CAGR.
+  'univ' is equal weight over the names where the feature EXISTS that
+  month, which is the only portfolio the screen competes against;
+  'all' is equal weight over the whole month for reference.
+
+  feature            months  top 63d  univ 63d  all 63d  top CAGR  univ CAGR  vs 14.82
+  ----------------------------------------------------------------------------------
+  debt_equity            52   +3.10%    +3.20%   +3.10%   +13.00%    +13.43%    -1.82%
+  lt_debt_equity         52   +2.85%    +2.90%   +3.10%   +11.92%    +12.13%    -2.90%
+  current_ratio          52   +5.05%    +3.09%   +3.10%   +21.77%    +12.93%    +6.95%
+  cash_to_assets         52   +3.79%    +3.19%   +3.10%   +16.05%    +13.38%    +1.23%
+  opinc_to_ltdebt        52   +4.26%    +2.97%   +3.10%   +18.16%    +12.42%    +3.34%
+  pe                     52   +3.41%    +2.80%   +3.10%   +14.37%    +11.69%    -0.45%
+  pb                     52   +2.88%    +3.05%   +3.10%   +12.01%    +12.76%    -2.81%
+
+  AND THE SAME EXCESS, WITH THE TWO BETAS PAID FOR (rule 3, long-only)
+  excess = top decile minus the measurable universe. explained =
+  (top-minus-universe market beta) x SPY_63d + (ditto rate beta) x
+  TLT_63d. A long-only screen that only beats equal weight because it
+  holds more beta in a rising market is a leverage choice, not a screen.
+
+  feature             d bmkt  d brate   excess      t    expl   resid      t  resid CAGR    hit
+  -------------------------------------------------------------------------------------
+  debt_equity          +0.03    -0.07   -0.10%  -0.15  +0.50%  -0.60%  -0.92     +10.83%    62%
+  lt_debt_equity       -0.03    +0.04   -0.05%  -0.10  -0.30%  +0.25%  +0.49     +13.22%    44%
+  current_ratio        +0.34    -0.05   +1.96%  +2.41  +1.03%  +0.93%  +1.42     +17.08%    60%
+  cash_to_assets       +0.30    -0.06   +0.60%  +0.98  +0.85%  -0.25%  -0.53     +12.27%    54%
+  opinc_to_ltdebt      +0.12    -0.04   +1.29%  +1.92  +0.06%  +1.24%  +2.01     +17.91%    58%
+  pe                   +0.34    -0.03   +0.61%  +0.87  +0.91%  -0.30%  -0.48     +10.40%    60%
+  pb                   +0.11    +0.04   -0.17%  -0.29  -0.00%  -0.17%  -0.31     +12.02%    48%
+  -------------------------------------------------------------------------------------
+  hit = share of holdout months the top decile beat the measurable
+  universe. Overlapping windows make consecutive months near-copies of
+  each other, so a high hit rate on 52 months is not 52 coin flips.
+
+  CALIBRATION OF THE ANNUALISATION, because this is where a fake
+  percent point comes from:
+    whole-universe mean fwd63 +3.75% annualised this way = +15.85%
+    the same universe actually compounded (rule 4)  = +14.82%
+    so this arithmetic runs about +1.03 points HOT. Every CAGR in the table above carries
+    roughly that bias, which is why the top-versus-universe columns
+    are the comparison and the absolute CAGR is not.
+
+======================================================================================
+  VERDICT
+======================================================================================
+  Unconditional, beta-neutral, both halves, past the haircut bar: 0 of 7.
+
+  Regime spreads over 1% in magnitude, and what is left of them
+  after the two betas are paid their realised factor returns:
+    pb               rates UP      -4.12% -> residual  -1.86% (t -1.74, +55% explained by beta)
+    pb               rates DOWN    +3.51% -> residual  +1.99% (t +2.41, +43% explained by beta)
+    pe               rates UP      -3.44% -> residual  -1.87% (t -2.05, +46% explained by beta)
+    debt_equity      rates UP      +3.04% -> residual  +1.58% (t +2.17, +48% explained by beta)
+    debt_equity      rates DOWN    -2.61% -> residual  -0.74% (t -0.98, +72% explained by beta)
+    current_ratio    rates DOWN    +2.57% -> residual  +2.04% (t +2.58, +21% explained by beta)
+    cash_to_assets   rates UP      +2.41% -> residual  +0.49% (t +0.77, +80% explained by beta)
+    pe               rates DOWN    +2.25% -> residual  +0.60% (t +0.75, +73% explained by beta)
+    opinc_to_ltdebt  rates UP      -1.92% -> residual  -0.98% (t -1.02, +49% explained by beta)
+    cash_to_assets   rates DOWN    +1.03% -> residual  +0.64% (t +0.83, +37% explained by beta)
+
+  LONG-ONLY, holdout, top decile against the measurable universe:
+    current_ratio    top CAGR +21.77% vs univ +12.93%  excess +1.96% (t +2.41) of which residual +0.93% (t +1.42)
+    opinc_to_ltdebt  top CAGR +18.16% vs univ +12.42%  excess +1.29% (t +1.92) of which residual +1.24% (t +2.01)
+    pe               top CAGR +14.37% vs univ +11.69%  excess +0.61% (t +0.87) of which residual -0.30% (t -0.48)
+    cash_to_assets   top CAGR +16.05% vs univ +13.38%  excess +0.60% (t +0.98) of which residual -0.25% (t -0.53)
+    lt_debt_equity   top CAGR +11.92% vs univ +12.13%  excess -0.05% (t -0.10) of which residual +0.25% (t +0.49)
+    debt_equity      top CAGR +13.00% vs univ +13.43%  excess -0.10% (t -0.15) of which residual -0.60% (t -0.92)
+    pb               top CAGR +12.01% vs univ +12.76%  excess -0.17% (t -0.29) of which residual -0.17% (t -0.31)
+
+  A residual that clears the bar ONLY inside a regime is not a trade
+  for a cash account: the regime label is the next quarter's TLT
+  return. It would only matter as evidence that an FOMC call has an
+  economic transmission channel worth forecasting.

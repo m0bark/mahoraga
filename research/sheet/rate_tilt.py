@@ -701,21 +701,26 @@ def main() -> None:
     say(f"  {sum(1 for _, ok in checks if ok)} of {len(checks)} pre-registered "
         f"conditions met.")
     say("")
+    dd_a = abs(compound(r_lo)[2])
+    dd_c = abs(compound(r_uni)[2])
     say("  CONCLUSION. The raw CAGR ordering goes the right way and a long-only")
-    say("  REPRODUCIBILITY. An independent recomputation that sorts on a strict")
-    say("  bottom-decile cut and demands a complete 252-day history, rather than")
-    say("  qcut on ranks, gives arm A holdout +17.02% against +17.09% here and the")
-    say("  same excess t to two decimals. The arms are not an artifact of the cut,")
-    say("  but 0.3% of full-window CAGR does move with the implementation detail,")
-    say("  which is itself a comment on a 2-point edge carrying t of 1.1.")
+    say("  cash account could have held arm A, but the advantage is mostly market")
+    say("  beta plus a realised duration move, over an effective sample of four or")
+    say(f"  five rate episodes, with half the holdout edge in one calendar year")
+    say(f"  whose yields FELL. t is {t_exc:+.2f} against a bar of {bar:.2f}. Arm A "
+        f"also drew")
+    say(f"  down {dd_a:.1f}% against the universe's {dd_c:.1f}%, so even the raw "
+        f"number is bought")
+    say("  with risk a cash account feels. This is NOTHING.")
     say("")
-    say("  cash account could have held arm A, but the advantage is roughly two")
-    say("  thirds market beta plus a realised duration move, over an effective")
-    say("  sample of four or five rate episodes, with half the holdout edge in one")
-    say("  calendar year whose yields FELL. t is about 1.1 against a bar of "
-        f"{bar:.2f}.")
-    say("  Arm A also drew down 43.6% against the universe's 25.4%, so even the")
-    say("  raw number is bought with risk a cash account feels. This is NOTHING.")
+    say("  REPRODUCIBILITY. An independent recomputation that takes a strict")
+    say("  bottom-decile cut of a full sort and demands a complete 252-day return")
+    say("  history, instead of qcut on ranks, gives arm A holdout +17.02% against")
+    say(f"  {cagr_a:+.2f}% here and the same excess t to two decimals. The arms are "
+        f"not an")
+    say("  artifact of the cut, but about 0.3% of full-window CAGR does move with")
+    say("  that implementation detail, which is itself a comment on the size of a")
+    say("  two-point edge carrying a t of one.")
 
 
 if __name__ == "__main__":

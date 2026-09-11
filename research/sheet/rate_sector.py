@@ -164,13 +164,25 @@ def two_factor_betas(C: pd.DataFrame, syms: list[str]
     the adjustment-factor contamination documented in tree_screen.py cannot
     enter here: the factor cancels in every pct_change.
     """
-    R = C[syms].pct_change()
-    rs = C[MKT].pct_change()
-    rt = C[RATE].pct_change()
+    # px_close.csv carries a few NON-TRADING rows with every price NaN
+    # (2026-05-25 Memorial Day, 2026-09-07 Labor Day). pct_change turns one such
+    # row into TWO NaN returns, and rolling(252) with the default min_periods
+    # then returns NaN for the following 252 days. Left alone that silently
+    # deleted the whole 2026-05-29 decision month from the panel -- 347 rows, one
+    # of 158 months -- which is exactly the kind of quiet drop that makes two
+    # runs of the same measurement disagree. A day the market proxy did not
+    # trade is not a trading day, so it is removed before any return is taken.
+    # The forward factor moves deliberately keep the ORIGINAL index so their
+    # 63-row offsets stay on the same convention grid.py used to build fwd63.
+    Cc = C[C[[MKT, RATE]].notna().all(axis=1)]
+    R = Cc[syms].pct_change()
+    rs = Cc[MKT].pct_change()
+    rt = Cc[RATE].pct_change()
     W = BETA_WINDOW
 
     def cov_ss(a: pd.Series, b: pd.Series) -> pd.Series:
-        return (a * b).rolling(W).mean() - a.rolling(W).mean() * b.rolling(W).mean()
+        return ((a * b).rolling(W).mean()
+                - a.rolling(W).mean() * b.rolling(W).mean())
 
     def cov_panel(P: pd.DataFrame, b: pd.Series) -> pd.DataFrame:
         return (P.mul(b, axis=0).rolling(W).mean()
@@ -501,7 +513,8 @@ def sealed(sm: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
         same = np.sign(x.search) == np.sign(x.holdout)
         say(f"  {x.Index:<24}{x.search:>+10.2f}%{int(x.rank_search):>6}"
             f"{x.holdout:>+10.2f}%{int(x.rank_holdout):>6}"
-            f"{x.t_ho / OVERLAP_INFLATION:>+10.2f}{('same' if same else 'FLIP'):>7}")
+            f"{x.t_ho / OVERLAP_INFLATION:>+10.2f}"
+            f"{('same' if same else 'FLIP'):>7}")
     say("  " + "-" * 90)
     rho = r.rank_search.corr(r.rank_holdout, method="spearman")
     agree = int((np.sign(r.search) == np.sign(r.holdout)).sum())
@@ -510,7 +523,8 @@ def sealed(sm: pd.DataFrame, f: pd.DataFrame) -> pd.DataFrame:
         f"(5.5 expected by chance)")
     top = r.index[0]
     say(f"  The sector the search sample would have picked is {top} at "
-        f"{r.search.iloc[0]:+.2f}%; out of sample it did {r.holdout.iloc[0]:+.2f}%.")
+        f"{r.search.iloc[0]:+.2f}%; out of sample it did "
+        f"{r.holdout.iloc[0]:+.2f}%.")
     return r
 
 
@@ -723,9 +737,14 @@ def main() -> None:
         f"t/1.7 {top.t_up / OVERLAP_INFLATION:+.2f} vs bar {MULTI_TEST_BAR:.2f}")
     dt = dec[dec.sector == top.sector]
     if len(dt):
-        say(f"  2. RESIDUAL    of that, {dt.pred.iloc[0]:+.2f}% is exposure x "
+        say(f"  2a. RESIDUAL   of that, {dt.pred.iloc[0]:+.2f}% is exposure x "
             f"realised factor move, residual {dt.resid.iloc[0]:+.2f}% "
             f"({dt.explained_pct.iloc[0]:+.0f}% explained)")
+        say(f"  2b. RESIDUAL   with exposures fitted in hindsight the residual "
+            f"is {dt.resid_up.iloc[0]:+.2f}%,")
+        say(f"      t/1.7 {dt.t_resid_up.iloc[0] / OVERLAP_INFLATION:+.2f}. "
+            f"Largest residual across all {N_SECTORS} sectors: "
+            f"{dec.resid_up.abs().max():.2f}%")
     bt = bn[bn.sector == top.sector]
     if len(bt):
         say(f"  3. BETA-NEUTRAL same sector on the two-beta-neutral target: "

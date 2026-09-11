@@ -576,6 +576,41 @@ def section_decomposition(d: pd.DataFrame) -> dict[str, float]:
     say("")
     say("  A spread that the two legs already account for is a restatement of")
     say("  known exposures handed the answer key, not a forecast.")
+
+    # The sharpest form of the same question, and it needs no factor model.
+    # If the spread were duration being paid, doubling the realised rate
+    # exposure of the two legs must roughly double the return. Sorting on the
+    # realised forward beta does exactly that to the exposure. Watch the return.
+    say("")
+    say("  LINEARITY TEST -- IF THIS WERE DURATION, MORE OF IT WOULD PAY MORE")
+    say("  Two sorts over the same rates-UP months. The second one is handed the")
+    say("  realised forward rate beta, so it buys far more actual duration")
+    say("  spread. A duration trade must pay in proportion.")
+    say("")
+    say(f"  {'sorted on':<26}{'realised rate exp':>19}{'ret spread':>13}"
+        f"{'% per unit':>12}")
+    say("  " + "-" * 72)
+    ref = None
+    for lab, sc in (("trailing 252d beta", f"rb_{HEADLINE_WINDOW}"),
+                    ("realised forward beta", "rb_fwd")):
+        s = decile_stats(up, sc, ["y", "b2f_tlt"])
+        if s.empty:
+            continue
+        exp_, ret_ = s.b2f_tlt.mean(), s.y.mean()
+        say(f"  {lab:<26}{exp_:>+19.3f}{ret_:>+12.2f}%{ret_ / exp_:>+12.2f}")
+        if ref is None:
+            ref = (exp_, ret_)
+        else:
+            say("  " + "-" * 72)
+            say(f"  {exp_ / ref[0]:.2f}x the realised rate exposure pays "
+                f"{ret_ / ref[1]:.2f}x the return.")
+            say("  Proportionality would need those two multiples to match. They")
+            say("  do not, and the second is below 1.0, so the spread is not")
+            say("  duration being paid. It is whatever else a trailing rate beta")
+            say("  is correlated with -- sector and style -- and that is not")
+            say("  something an FOMC call tells you the sign of.")
+            out["lin_exp_mult"] = exp_ / ref[0]
+            out["lin_ret_mult"] = ret_ / ref[1]
     return out
 
 
@@ -592,27 +627,35 @@ def section_long_only(d: pd.DataFrame) -> dict[str, float]:
     say("  on its own.")
     say("")
     up = d[d.tlt_fwd < 0]
-    raw = decile_stats(up, f"rb_{HEADLINE_WINDOW}", ["y"])
-    bn = decile_stats(beta_neutral(up), f"rb_{HEADLINE_WINDOW}", ["y"])
-    say(f"  {'target':<20}{'months':>8}{'low dec':>11}{'t':>8}"
+    cases = (("rates UP, raw", "up_raw", up),
+             ("rates UP, beta-neut", "up_bn", beta_neutral(up)),
+             ("ALL months, raw", "all_raw", d),
+             ("ALL months, beta-neut", "all_bn", beta_neutral(d)))
+    say(f"  {'target':<24}{'months':>8}{'low dec':>11}{'t':>8}"
         f"{'high dec':>11}{'high-low':>11}")
-    say("  " + "-" * 70)
+    say("  " + "-" * 74)
     out: dict[str, float] = {}
-    for lab, s in (("raw demeaned", raw), ("beta-neutral", bn)):
+    for lab, key, sub in cases:
+        s = decile_stats(sub, f"rb_{HEADLINE_WINDOW}", ["y"])
         if s.empty:
             continue
-        say(f"  {lab:<20}{len(s):>8}{s.y_lo.mean():>+10.2f}%"
+        say(f"  {lab:<24}{len(s):>8}{s.y_lo.mean():>+10.2f}%"
             f"{month_t(s.y_lo):>+8.2f}{s.y_hi.mean():>+10.2f}%"
             f"{s.y.mean():>+10.2f}%")
-        key = "raw" if lab.startswith("raw") else "bn"
         out[f"{key}_lo"] = s.y_lo.mean()
         out[f"{key}_t"] = month_t(s.y_lo)
         out[f"{key}_spread"] = s.y.mean()
     say("")
-    say("  The long leg is the half of the spread that survives the cash-account")
-    say("  constraint, and it is collected only in months already identified by")
-    say("  lookahead. A real forecast right 60% of the time keeps roughly a")
-    say("  fifth of a two-sided spread, and less than that of one leg.")
+    say("  The 'rates UP' rows need the rate call and are collected in only")
+    say(f"  {up.date.nunique()} of {d.date.nunique()} months, chosen with the"
+        " answer key. The 'ALL months' rows are")
+    say("  what a long-only account gets by permanently owning the low-rate-beta")
+    say("  decile with no view at all, and they are the only unconditional")
+    say("  numbers in this file.")
+    say("")
+    say("  A real forecast right 60% of the time keeps roughly a fifth of a")
+    say("  two-sided spread, and less than that of one leg, so divide the")
+    say("  conditional long leg by about five before comparing it to 14.78%.")
     return out
 
 
@@ -636,21 +679,48 @@ def main() -> None:
     say("=" * 78)
     say("  VERDICT")
     say("=" * 78)
-    say(f"  A trailing {HEADLINE_WINDOW}-day rate beta carries "
-        f"{cap['capture'] * 100:.0f}% of the forward exposure")
-    say(f"  spread that perfect foresight about exposure would have bought, and")
-    say(f"  the deciles realise {cap['shrink_vs_advertised']:.2f} of the beta"
-        " gap they advertise.")
-    say(f"  In rates-UP months the demeaned decile spread is "
-        f"{dec.get('ret', float('nan')):+.2f}%, of which")
-    say(f"  {dec.get('ratef', float('nan')):+.2f}% is realised rate exposure "
-        f"times the realised TLT move")
-    say(f"  and {dec.get('mktf', float('nan')):+.2f}% is market exposure times "
-        "the realised SPY move,")
-    say(f"  leaving {dec.get('residf', float('nan')):+.2f}% unexplained.")
-    say(f"  The tradable long leg is {lo.get('raw_lo', float('nan')):+.2f}% "
-        f"raw and {lo.get('bn_lo', float('nan')):+.2f}% beta-neutral,")
-    say("  in months selected with the answer key in hand.")
+    nan = float("nan")
+    say("  1. RATE BETA DOES PERSIST. True 252-day rate beta correlates "
+        f"{pers[HEADLINE_WINDOW]['disatt']:.2f}")
+    say("     with true forward 63-day beta; the raw figure is only "
+        f"{pers[HEADLINE_WINDOW]['pearson']:.2f} because a")
+    say(f"     63-day beta is just {reli.get(-FWD_DAYS, nan):.2f} signal. The "
+        f"shrinkage slope is {pers[HEADLINE_WINDOW]['slope']:.2f}.")
+    say("     Step one of the rate approach is NOT where it fails.")
+    say(f"  2. A TRAILING SORT DELIVERS {cap['capture_true'] * 100:.0f}% OF THE"
+        " AVAILABLE EXPOSURE SPREAD")
+    say(f"     ({cap['trail_fwd_spread']:+.3f} against a noise-corrected "
+        f"ceiling of {cap['true_ceiling']:+.3f}), and "
+        f"{cap['shrink_vs_advertised']:.2f}")
+    say(f"     of the {cap['advertised']:+.3f} trailing gap it advertises. But "
+        f"capture fell from {cap['early_capture']:.2f}")
+    say(f"     through {ERA_SPLIT} to {cap['late_capture']:.2f} after it, and "
+        "the delivered spread from")
+    say(f"     {cap['early_spread']:+.3f} to {cap['late_spread']:+.3f}, worst in "
+        "the one hiking cycle that mattered.")
+    say(f"  3. ESTIMATION ERROR IS NOT WHAT CAPS rate_foresight's "
+        f"{dec.get('ret', nan):+.2f}%. Sorting on")
+    say(f"     the REALISED forward rate beta gives "
+        f"{cap.get('rates UP perfect', nan):+.2f}%, which is SMALLER. It buys")
+    say(f"     {dec.get('lin_exp_mult', nan):.2f}x the realised rate exposure "
+        f"and pays {dec.get('lin_ret_mult', nan):.2f}x the return, so the")
+    say("     spread is not duration being paid and a better beta estimate buys")
+    say("     nothing. Fixing step one would not have helped.")
+    say(f"  4. OF THAT {dec.get('ret', nan):+.2f}%, {dec.get('ratef', nan):+.2f}%"
+        " is realised rate exposure times the")
+    say(f"     realised TLT move and {dec.get('mktf', nan):+.2f}% is market "
+        "exposure times the realised SPY")
+    say(f"     move, leaving {dec.get('residf', nan):+.2f}% residual: the two "
+        "legs alone explain "
+        f"{(1 - abs(dec.get('residf', nan) / dec.get('ret', nan))) * 100:.0f}%.")
+    say("  5. LONG-ONLY, UNCONDITIONAL: owning the low-rate-beta decile every")
+    say(f"     month earns {lo.get('all_raw_lo', nan):+.2f}% per 63 days against"
+        f" the universe mean, t {lo.get('all_raw_t', nan):+.2f},")
+    say(f"     and {lo.get('all_bn_lo', nan):+.2f}% beta-neutral, t "
+        f"{lo.get('all_bn_t', nan):+.2f}. Conditional on a correct rate call")
+    say(f"     it is {lo.get('up_raw_lo', nan):+.2f}% raw and "
+        f"{lo.get('up_bn_lo', nan):+.2f}% beta-neutral, in months selected")
+    say("     with the answer key in hand.")
     say(f"  per-month detail written to cache_long/{OUT_CSV}")
 
 

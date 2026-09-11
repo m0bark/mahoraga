@@ -56,6 +56,30 @@ Overlapping 63-day forward windows on monthly dates make the effective count
 roughly a third of the raw one, so a bucket of 15 months is about 5 independent
 observations. Any bucket under MIN_CREDIBLE_MONTHS is labelled an anecdote in
 the output, not a measurement, and no amount of t-statistic changes that.
+
+WHAT IT FOUND, recorded after the run so the next reader does not redo it
+Nothing, on all three of the falsification tests above.
+  * The pre-registered EARLY bucket's rate-beta spread is NOT wider than LATE's.
+    Rates-up EARLY -8.37% against LATE -6.92%, a difference of -1.45% with a
+    deflated two-sample t of -0.12 against a search bar of 2.72. Every one of
+    the 20 early-minus-late contrasts printed fails; the best is 1.75.
+  * The spread does vary strongly across phase, but in the OPPOSITE direction to
+    a cycle story and for the wrong reason. It is widest where the bond
+    downtrend has not started (-14.53%) and narrowest where it is entrenched
+    (-5.15%). That -9.38% difference has a deflated t of -2.01 on the raw
+    target and -0.03% with t -0.01 once market beta is regressed out. The phases
+    differ in how much market beta the rate-beta deciles happened to carry.
+  * Rule 3 eats most of what is left: 68-117% of each rates-up bucket's spread
+    is (rate-beta gap) x (realised TLT move) + (market-beta gap) x (realised SPY
+    move), and no bucket's residual clears the bar either.
+  * 6 of 10 phase buckets flip the sign of their beta-neutral spread between
+    train and holdout.
+  * The long-only version does nothing: -1.50pp against equal weight in train,
+    +2.90pp in holdout, -0.00pp over the full sample, inside the +-0.83pp noise
+    of which month the quarterly chain starts in.
+The one piece of context that is real and does not need a rate view: the
+universe returned +12.3% annualised in the 46 EARLY months against +15.9% in
+the 83 UPTREND months, and won 67% of EARLY months against 81% of UPTREND ones.
 """
 from __future__ import annotations
 
@@ -141,6 +165,23 @@ AXES = (
     ("trail_phase", TRAIL_PHASES,
      "terciles of TLT's trailing 252-day return (the other variable the angle "
      "named)"),
+)
+
+# The differences that actually answer the angle, as (axis, earlier, later).
+# The first two are the literal pre-registered question: trend just turned versus
+# trend long established. The last two are the STRONGEST form of the claim, added
+# after seeing that the spread rises monotonically as you go BACKWARDS along each
+# axis: the biggest spread sits where the downtrend has not started yet at all,
+# which is the bucket that contains the actual turn (the decision date precedes
+# it, the turn happens inside the forward window). If "first move repriced
+# hardest" is true of anything here, it is true of that bucket, so it is tested
+# explicitly rather than left as a pattern noticed in a table.
+CONTRASTS = (
+    ("phase", "EARLY", "LATE"),
+    ("persist_phase", "TURNING", "ENTRENCHED"),
+    ("phase", "UPTREND", "LATE"),
+    ("persist_phase", "NOT DOWN", "ENTRENCHED"),
+    ("trail_phase", "TLT up", "TLT down hard"),
 )
 
 
@@ -349,6 +390,11 @@ def monthly_spreads(sub: pd.DataFrame, ycol: str) -> pd.Series:
     return pd.Series(out, dtype=float).sort_index()
 
 
+def fmt(v: float, w: int = 6, dp: int = 2) -> str:
+    """Fixed-width number that prints 'n/a' rather than '+nan'."""
+    return f"{'n/a':>{w}}" if not np.isfinite(v) else f"{v:>+{w}.{dp}f}"
+
+
 def month_t(sp: pd.Series) -> tuple[float, float]:
     """t of the mean monthly spread, raw and deflated for window overlap."""
     if len(sp) < 3 or sp.std(ddof=1) == 0:
@@ -396,13 +442,21 @@ def spread_table(d: pd.DataFrame, mask: pd.Series, title: str,
                 continue
             raw = bucket_row(sub, "y")
             bn = bucket_row(sub, "y_bn")
-            res[col][ph] = {"raw": raw, "bn": bn, "rows": len(sub)}
+            # The rule-3 residual, per month: the actual spread minus what known
+            # exposures times realised factor returns already account for. This
+            # is the series the contrast section compares, because comparing raw
+            # spreads across phases compares realised bond moves, not edges.
+            dm = decompose_months(sub)
+            resid = {"series": (dm.set_index("date").resid if len(dm)
+                                else pd.Series(dtype=float))}
+            res[col][ph] = {"raw": raw, "bn": bn, "resid": resid,
+                            "rows": len(sub)}
             cred = ("ANECDOTE, not a measurement"
                     if raw["months"] < MIN_CREDIBLE_MONTHS else "measurable")
             say(f"  {ph:<15}{raw['months']:>8}{raw['months'] / 3.0:>7.1f}"
-                f"{raw['spread']:>+12.2f}%{raw['t']:>+7.2f}{raw['t_adj']:>+8.2f}"
-                f"{raw['mono']:>+7.2f}"
-                f"{bn['spread']:>+11.2f}%{bn['t']:>+7.2f}{bn['t_adj']:>+8.2f}"
+                f"{raw['spread']:>+12.2f}%{fmt(raw['t'], 7)}{fmt(raw['t_adj'], 8)}"
+                f"{fmt(raw['mono'], 7)}"
+                f"{bn['spread']:>+11.2f}%{fmt(bn['t'], 7)}{fmt(bn['t_adj'], 8)}"
                 f"  {cred}")
     say("")
     say(f"  eff n = months / 3, the overlap-corrected count. t/1.7 is the t")
@@ -414,7 +468,28 @@ def spread_table(d: pd.DataFrame, mask: pd.Series, title: str,
 
 
 # ----------------------------------------------------- rule 3 decomposition
-def decompose(d: pd.DataFrame, sub: pd.DataFrame, label: str) -> None:
+def decompose_months(sub: pd.DataFrame) -> pd.DataFrame:
+    """Per-month actual spread and the two known-exposure product terms."""
+    rows = []
+    for dt, g in sub.groupby("date"):
+        hi = g[g.dec == N_DEC - 1]
+        lo = g[g.dec == 0]
+        if len(hi) < 2 or len(lo) < 2:
+            continue
+        d_rb = hi.rate_beta.mean() - lo.rate_beta.mean()
+        d_mb = hi.beta252.mean() - lo.beta252.mean()
+        rows.append({"date": dt,
+                     "actual": hi.y.mean() - lo.y.mean(),
+                     "rate_term": d_rb * g.tlt_fwd.iloc[0],
+                     "mkt_term": d_mb * g.spy_fwd.iloc[0],
+                     "d_rb": d_rb, "d_mb": d_mb})
+    x = pd.DataFrame(rows)
+    if len(x):
+        x["resid"] = x.actual - x.rate_term - x.mkt_term
+    return x
+
+
+def decompose(d: pd.DataFrame, sub: pd.DataFrame, label: str) -> pd.DataFrame:
     """Exposure times realised factor return, the check rule 3 demands.
 
     For each month: the high-minus-low decile gap in rate beta, multiplied by
@@ -427,25 +502,10 @@ def decompose(d: pd.DataFrame, sub: pd.DataFrame, label: str) -> None:
     cleanly attributed one against the other. Their SUM against the actual
     spread is the quantity that means something.
     """
-    rows = []
-    for dt, g in sub.groupby("date"):
-        hi = g[g.dec == N_DEC - 1]
-        lo = g[g.dec == 0]
-        if len(hi) < 2 or len(lo) < 2:
-            continue
-        d_rb = hi.rate_beta.mean() - lo.rate_beta.mean()
-        d_mb = hi.beta252.mean() - lo.beta252.mean()
-        tlt = g.tlt_fwd.iloc[0]
-        spy = g.spy_fwd.iloc[0]
-        rows.append({"date": dt,
-                     "actual": hi.y.mean() - lo.y.mean(),
-                     "rate_term": d_rb * tlt / 100.0 * 100.0,
-                     "mkt_term": d_mb * spy / 100.0 * 100.0,
-                     "d_rb": d_rb, "d_mb": d_mb})
-    if len(rows) < 3:
+    x = decompose_months(sub)
+    if len(x) < 3:
         say(f"  {label}: fewer than 3 usable months, no decomposition")
-        return
-    x = pd.DataFrame(rows)
+        return x
     act = x.actual.mean()
     rt = x.rate_term.mean()
     mt = x.mkt_term.mean()
@@ -463,7 +523,10 @@ def decompose(d: pd.DataFrame, sub: pd.DataFrame, label: str) -> None:
     say(f"    (rate-beta gap) x (realised TLT move)  {rt:+7.2f}%")
     say(f"    (mkt-beta gap)  x (realised SPY move)  {mt:+7.2f}%")
     say(f"    sum of the two known-exposure terms    {pred:+7.2f}%  {frac_txt}")
-    say(f"    RESIDUAL, the only part that is new    {resid:+7.2f}%")
+    t_r, t_r_adj = month_t(x.resid)
+    say(f"    RESIDUAL, the only part that is new    {resid:+7.2f}%  "
+        f"month-level t {fmt(t_r)}, deflated {fmt(t_r_adj)}")
+    return x
 
 
 # ------------------------------------------------------------- the context
@@ -616,8 +679,8 @@ def sealed(d: pd.DataFrame) -> None:
                 cred = ("anecdote" if raw["months"] < MIN_CREDIBLE_MONTHS
                         else "measurable")
                 say(f"  {ph:<15}{split:<9}{raw['months']:>8}"
-                    f"{raw['spread']:>+10.2f}%{raw['t_adj']:>+8.2f}"
-                    f"{bn['spread']:>+11.2f}%{bn['t_adj']:>+8.2f}  {cred}")
+                    f"{raw['spread']:>+10.2f}%{fmt(raw['t_adj'], 8)}"
+                    f"{bn['spread']:>+11.2f}%{fmt(bn['t_adj'], 8)}  {cred}")
         for ph in order:
             a, b = signs.get((ph, "train")), signs.get((ph, "holdout"))
             if a is not None and b is not None:
@@ -702,11 +765,11 @@ def main() -> None:
                 say("")
 
     sealed(d)
-    long_only(d)
-    contrast(r_up, r_all)
+    lo_gap = long_only(d)
+    contrast(r_up, r_all, lo_gap)
 
 
-def contrast(r_up: dict, r_all: dict) -> None:
+def contrast(r_up: dict, r_all: dict, lo_gap: dict[str, float]) -> None:
     """The early-minus-late difference, which is the angle's actual question."""
     say("")
     say("=" * 92)
@@ -714,10 +777,10 @@ def contrast(r_up: dict, r_all: dict) -> None:
     say("=" * 92)
     say("  The angle does not ask whether the spread exists. It asks whether it")
     say("  is BIGGER early than late. That difference is the line below.")
+    best: list[tuple[float, str]] = []
     for tag, r in (("rates-UP only (answer key)", r_up),
                    ("all months (tradeable)", r_all)):
-        for col, early, late in (("phase", "EARLY", "LATE"),
-                                 ("persist_phase", "TURNING", "ENTRENCHED")):
+        for col, early, late in CONTRASTS:
             e = r.get(col, {}).get(early)
             l = r.get(col, {}).get(late)
             if not e or not l:
@@ -725,21 +788,59 @@ def contrast(r_up: dict, r_all: dict) -> None:
             say("")
             say(f"  {tag}   axis {col}")
             for nm, b in ((early, e), (late, l)):
-                say(f"    {nm:<11}{b['raw']['months']:>3} months  raw "
+                say(f"    {nm:<14}{b['raw']['months']:>3} months  raw "
                     f"{b['raw']['spread']:+6.2f}%  beta-neutral "
                     f"{b['bn']['spread']:+6.2f}%  deflated t "
-                    f"{b['bn']['t_adj']:+5.2f}")
-            for lbl, key in (("raw", "raw"), ("beta-neutral", "bn")):
+                    f"{fmt(b['bn']['t_adj'], 5)}")
+            for lbl, key in (("raw", "raw"), ("beta-neutral", "bn"),
+                             ("rule-3 residual", "resid")):
                 a, bb = e[key]["series"], l[key]["series"]
+                if len(a) < 3 or len(bb) < 3:
+                    continue
                 gap = a.mean() - bb.mean()
-                # Two-sample t on the two sets of MONTHLY spreads. The buckets
+                # Two-sample t on the two sets of MONTHLY quantities. The buckets
                 # are different months so they are independent by construction;
                 # deflated for window overlap like everything else here.
                 se = np.sqrt(a.var(ddof=1) / len(a) + bb.var(ddof=1) / len(bb))
                 t = gap / se if se > 0 else np.nan
-                say(f"    {early} minus {late}, {lbl:<13}{gap:+6.2f}%   "
-                    f"two-sample t {t:+.2f}  deflated {t / OVERLAP_INFLATION:+.2f}"
-                    f"  (bar {SEARCH_BAR:.2f})")
+                say(f"    {early} minus {late}, {lbl:<16}{gap:+6.2f}%   "
+                    f"two-sample t {fmt(t, 5)}  deflated "
+                    f"{fmt(t / OVERLAP_INFLATION, 5)}  (bar {SEARCH_BAR:.2f})")
+                if np.isfinite(t) and key != "raw":
+                    best.append((abs(t) / OVERLAP_INFLATION,
+                                 f"{tag} / {early} minus {late} / {lbl}"))
+
+    say("")
+    say("=" * 92)
+    say("  VERDICT")
+    say("=" * 92)
+    best.sort(reverse=True)
+    top_t, top_name = best[0] if best else (np.nan, "nothing computable")
+    say(f"  Strongest early-minus-late contrast on any non-raw target:")
+    say(f"    {top_name}")
+    say(f"    deflated |t| {top_t:.2f} against a bar of {SEARCH_BAR:.2f}")
+    cleared = [n for v, n in best if v > SEARCH_BAR]
+    say(f"  {len(cleared)} of {len(best)} contrasts clear the bar.")
+    say("")
+    if not cleared:
+        say("  NOTHING. Cycle position does not change the rate-beta spread by")
+        say("  any amount this sample can distinguish from zero. The one contrast")
+        say("  that looks large on the RAW target -- the spread is about twice as")
+        say("  wide when the bond downtrend has not begun as when it is")
+        say("  entrenched -- goes to almost exactly zero the moment market beta")
+        say("  is regressed out, which is rule 2's warning arriving on schedule:")
+        say("  the phases differ in how much market beta the rate-beta deciles")
+        say("  happened to carry, not in how rates were repriced.")
+    else:
+        say("  One or more contrasts cleared the bar. Before believing it, check")
+        say("  the sealed-split table above for a sign flip and the rule-3")
+        say("  residual line for how much survives known exposures.")
+    say("")
+    say(f"  Long-only, trailing-only, EARLY-tilt minus equal-weight CAGR:")
+    for k in ("full", "train", "holdout"):
+        say(f"    {k:<9}{lo_gap[k]:+6.2f}pp")
+    say("  Train and holdout disagree in sign, and both gaps are inside the")
+    say(f"  {EW_BAR_CAGR:.2f}% bar's own start-offset noise. No long-only action.")
 
 
 if __name__ == "__main__":
