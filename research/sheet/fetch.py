@@ -116,27 +116,45 @@ _INFO_KEYS = [
 ]
 
 
-def _one_info(sym: str) -> dict:
+def _one_info(sym: str, tries: int = 4) -> dict:
+    """One yfinance .info pull, resilient to Yahoo rate-limiting.
+
+    When Yahoo throttles a machine, yf.Ticker(sym).info returns an EMPTY dict
+    rather than raising. Accepting that blank is what silently empties
+    shortName/sector/RATE/perfect_buy, the analyst consensus and the whole
+    Fundamentals sheet on a fresh PC. So an empty payload is treated as a
+    throttle and retried with backoff, and only the last attempt gives up.
+    """
     row = {"symbol": sym}
-    try:
-        t = yf.Ticker(sym)
-        info = t.info or {}
-        for k in _INFO_KEYS:
-            row[k] = info.get(k)
+    for attempt in range(tries):
         try:
-            cal = t.calendar
-            ed = None
-            if isinstance(cal, dict):
-                ed = cal.get("Earnings Date")
-                if isinstance(ed, (list, tuple)) and ed:
-                    ed = ed[0]
-            elif hasattr(cal, "loc") and "Earnings Date" in getattr(cal, "index", []):
-                ed = cal.loc["Earnings Date"][0]
-            row["next_earnings"] = str(ed)[:10] if ed is not None else None
-        except Exception:
-            row["next_earnings"] = None
-    except Exception as e:
-        row["error"] = type(e).__name__
+            t = yf.Ticker(sym)
+            info = t.info or {}
+            throttled = not info.get("marketCap") and not info.get("shortName")
+            if throttled and attempt < tries - 1:
+                time.sleep(1.5 * (attempt + 1))      # 1.5s, 3s, 4.5s backoff
+                continue
+            for k in _INFO_KEYS:
+                row[k] = info.get(k)
+            try:
+                cal = t.calendar
+                ed = None
+                if isinstance(cal, dict):
+                    ed = cal.get("Earnings Date")
+                    if isinstance(ed, (list, tuple)) and ed:
+                        ed = ed[0]
+                elif hasattr(cal, "loc") and "Earnings Date" in getattr(cal, "index", []):
+                    ed = cal.loc["Earnings Date"][0]
+                row["next_earnings"] = str(ed)[:10] if ed is not None else None
+            except Exception:
+                row["next_earnings"] = None
+            if throttled:
+                row["error"] = "empty_info_after_retries"
+            return row
+        except Exception as e:
+            row["error"] = type(e).__name__
+            if attempt < tries - 1:
+                time.sleep(1.5 * (attempt + 1))
     return row
 
 
@@ -155,8 +173,10 @@ def fetch_fundamentals() -> None:
                 say(f"  {done[0]}/{len(syms)}")
         return r
 
-    # 6 threads: yfinance is IO bound here and this is a daily job, not a loop
-    with ThreadPoolExecutor(max_workers=6) as ex:
+    # 3 threads, not 6: Yahoo throttles a fresh machine hitting .info hard, and
+    # a throttle here silently blanks the whole Fundamentals sheet. Slower and
+    # complete beats fast and empty.
+    with ThreadPoolExecutor(max_workers=3) as ex:
         for r in ex.map(work, syms):
             rows.append(r)
 
@@ -166,6 +186,12 @@ def fetch_fundamentals() -> None:
     stamp(df).to_csv(os.path.join(CACHE, "fundamentals.csv"), index=False)
     bad = df["marketCap"].isna().sum() if "marketCap" in df else len(df)
     say(f"wrote fundamentals.csv: {len(df)} rows, {bad} missing marketCap")
+    # A large blank fraction means Yahoo throttled this machine, not that the
+    # companies have no data. Say so loudly so it is not mistaken for a clean run.
+    if len(df) and bad > len(df) * 0.25:
+        say(f"  WARNING: {bad}/{len(df)} rows have no marketCap - Yahoo likely "
+            f"rate-limited this machine. Wait 10-15 min and re-run "
+            f"'fetch.py --fundamentals', then 'build_workbook.py'.")
 
 
 def _one_options(sym: str) -> dict:
@@ -180,7 +206,16 @@ def _one_options(sym: str) -> dict:
            "max_strike_notional": 0.0, "max_strike": None, "n_expiries": 0}
     try:
         t = yf.Ticker(sym)
-        exps = list(t.options or [])[:3]        # nearest 3 expiries
+        # t.options comes back empty both for names with no listed options AND
+        # for a rate-limited machine. Retry a couple of times so a throttle is
+        # not mistaken for "no options" and left blank on the Big Money tab.
+        exps = list(t.options or [])
+        for _retry in range(2):
+            if exps:
+                break
+            time.sleep(1.2 * (_retry + 1))
+            exps = list(yf.Ticker(sym).options or [])
+        exps = exps[:3]                          # nearest 3 expiries
         out["n_expiries"] = len(exps)
         for e in exps:
             try:
@@ -221,7 +256,8 @@ def fetch_options() -> None:
                 say(f"  {done[0]}/{len(syms)}")
         return r
 
-    with ThreadPoolExecutor(max_workers=6) as ex:
+    # 3 threads to stay under Yahoo's throttle, same reasoning as fundamentals.
+    with ThreadPoolExecutor(max_workers=3) as ex:
         for r in ex.map(work, syms):
             rows.append(r)
     df = pd.DataFrame(rows)
